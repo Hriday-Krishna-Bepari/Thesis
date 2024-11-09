@@ -1,0 +1,335 @@
+,Problem,Project Related to Maven/Java or Not(Yes or No),Is Issue Report Related to Flaky test or Not?(Yes or No),Has steps to Reproduce or Not (copy steps here or leave it blank),Fully Qualified Test Method Name,What info is in the issue report?,Is Flaky commit found?,Flaky Commit SHA,Developer Fixed Commit SHA,Module Name,Java Version,Bash Script to resolve compilation error,Does it compile?,Compilation Erro,"Root Reasons:Timing Dependent(TD), Implementation Dependent(ID), Order Dependent(OD)",Can you run the tests?,Reason not to run the Test,"Result (If you were able to reproduce,""Reproducible"", if not, what did you try so far and what was missing)",Path to java class,"Line number to
+ insert code",Inserted Code,Zip file of Columns L to O,Dependencies of the compiled code zip for fixed version (~/.m2),Dependencies of the compiled code zip for flaky version (~/.m2),Compiled code zip  for flaky version (mvn install -DskipTests ...),Code changes between flaky and fixed version (git diff),Docker image required (java_version_Ubuntu_version),normal run,"Zero shot(reproducible or not) insert the no of line where changes occur
+ including changes code","one shot(reproducible or not) insert the no of line where changes occur
+ including changes code","two shot(reproducible or not) insert the no of line where changes occur
+ including changes code","three shot(reproducible or not) insert the no of line where changes occur
+ including changes code","four shot(reproducible or not) insert the no of line where changes occur
+ including changes code","five shot(reproducible or not) insert the no of line where changes occur
+ including changes code"
+,,,,,,,,,,,,,,r,,,,,,,,,,,,,,,,,,,,
+,CURATOR-681,Yes,Yes,,"testReentrantSingleLock","1.Placing `Thread.sleep(550)` after `mutex.release()` and before
+`hasLock.set(false)` will fail this test more frequently.   2.https://github.com/apache/curator/pull/470",yes,d14cb464cbd4e8e0e1bb51daba76e84eb2e346db,260afcdadbadde87ce7a8c2a904afdc3c1013884,curator-recipes,java Version-8,,yes,no,TD,yes,,reproducible,curator-recipes/src/test/java/org/apache/curator/framework/recipes/locks/TestInterProcessMutexBase.java            2.mvn test -pl curator-recipes -Dtest=org.apache.curator.framework.recipes.locks.TestInterProcessMutex#testReentrantSingleLock,330," Thread.sleep(550);       2.Thread.sleep(550)` after `mutex.release()` and before
+`hasLock.set(false",,,,,,,,no:in 100 time,yes: in 100 time,no,yes:in 100 time,yes:in 100 time,yes:in 100 time
+,CURATOR-222,yes,yes,,testClientClosedDuringRefreshErrorMessage,"1. Backwards compatible to 3.4.6. If Containers are available, they’re used in all recipes that create parent nodes.
+The use of EnsurePath is now deprecated     2.see https://github.com/apache/curator/pull/79#issuecomment-103719656   3.— Diff: curator-recipes/src/test/java/org/apache/curator/framework/recipes/cache/TestPathChildrenCache.java —
+@@ -100,16 +100,16 @@ public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) th
+}
+}",yes,f18f87657af56bec32e8861ce5b3965c99807609,47da6211fcd82fcb8454f3464a94bf7f1e88d00e,curator-recipes,java Version-8,,yes,no,TD,yes,,not reducible,1.mvn test -pl curator-recipes -Dtest=org.apache.curator.framework.recipes.cache.TestPathChildrenCache#testClientClosedDuringRefreshErrorMessage    2.mvn test -pl curator-recipes -Dtest=org.apache.curator.framework.recipes.cache.TestPathChildrenCache      3.curator-recipes/src/test/java/org/apache/curator/framework/recipes/cache/TestPathChildrenCache.java,130,,,,,,,,yes,no,no,no,no,no,no
+,CURATOR-254,yes,yes,,testMulti(),"The TestBoundedDistributedQueue:testMulti fails intermittently. There is a maximum bound of 10 items for the queue, but it would seem that there's nothing providing synchronization between multiple producers for the same queue.Locking is provided in the DistributedQueue class, but only to stop multiple consumers reading the same message.The test defines the maximum items as 10, has 4 threads putting items onto the queue and will fail if at any point the number of work items on the queue is > 20.",yes,"9d2d6851e4c737ffe2d2dcd8ec49e946084d339d","970bd3963c
+dca545580460e34ccaead8e9c212f7",curator-recipes,java Version-8,,yes,no,TD,yes,,reproducible,1.  mvn test -pl curator-recipes -Dtest=org.apache.curator.framework.recipes.queue.TestBoundedDistributedQueue,"                                 71,82,190","190:            Assert.assertTrue(count <= (MAX_ITEMS * SLOP_FACTOR), counts.toString());  71: final int           ADD_ITEMS = MAX_ITEMS * 1000;
+        final int           SLOP_FACTOR = 2;   82:  Thread.sleep(100);",,,,,,,,no:in 100 times,no:in 100 times,"yes:in 100time(Running org.apache.curator.framework.recipes.queue.TestBoundedDistributedQueue
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1,196.79 sec <<< FAILURE! - in org.apache.curator.framework.recipes.queue.TestBoundedDistributedQueue
+testMulti(org.apache.curator.framework.recipes.queue.TestBoundedDistributedQueue)  Time elapsed: 1,174.752 sec  <<< FAILURE!
+",yes:in 100 times,yes:in 100 times,yes:in 100 times
+,CURATOR-671,yes,yes,,testLostRestart,,yes,git checkout 4221604,git checkout 260afcd,curator-recipes,java Version-8,,yes,no,TD,yes,,reproducible,mvn -pl curator-recipes test -Dtest=org.apache.curator.framework.recipes.leader.TestLeaderSelectorCluster#testLostRestart,0,,,,,,,,,no:100 times,no:  in 100 times,yes:first 6 times in 100time,yes:first 6 times in 100time,yes:in 100time,
+,CURATOR-694,,,,,,,,,,,,,,,,,reproducible,,,,,,,,,,,,,,,,
+,APEXCORE-453,yes,yes,,testFibonacci,1.testFibonacciRecovery1(com.datatorrent.stram.plan.logical.DelayOperatorTest)  Time elapsed: 9.444 sec  <<< FAILURE!    2.check https://github.com/apache/incubator-apex-core/pull/284#issuecomment-200566464,yes,8549664399abdf3b646146f3db9e99d930ed8774,f2770b22bf631a39328e003eb8af07252ee665fa,engine,java Version-8,,yes,no,TD,yes,, reproducible,mvn -pl engine test -Dtest=com.datatorrent.stram.plan.logical.DelayOperatorTest#testFibonacci,0,,"show error massage .Results :
+
+Tests in error:
+  DelayOperatorTest.testFibonacciRecovery1:356 ▒ NullPointer
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  23.546 s
+[INFO] Finished at: 2024-10-05T19:54:08+06:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.14.1:test (default-test) on project apex-engine: There are test failures.
+...",n,,,,,,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,APEXCORE-459,yes,yes,,performanceTest,"
+Failed tests:
+AbstractReservoirTest.performanceTest:277 com.datatorrent.stram.engine.AbstractReservoir$SpscArrayQueueReservoir: expected to complete within 10000 millis. Actual time 12707 millis",yes,   87907df81367c3cdd2688baf55890ff24a4b8f57,0ead5f1e351c16646131226dbb0ae513eefc182b  ,engine,java Version-8,,yes,np,TD,yes,,reproducible,mvn -pl engine test -Dtest=com.datatorrent.stram.engine.AbstractReservoirTest#performanceTest     2. mvn -pl engine test -Dtest=com.datatorrent.stram.engine.AbstractReservoirTest,"231,237,254","1.skip ignore   2, 254-Thread.sleep(100); //added for flaky",n,,,,,,0,no:100times,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,APEXCORE-403,yes,yes,,testFibonacciRecovery1(),,yes,,,,java Version-8,,Yes,NO,TD,yes,,reproducible,mvn -pl engine test -Dtest=com.datatorrent.stram.plan.logical.DelayOperatorTest#testFibonacciRecovery1,0,,,,,,,,1,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,COLLECTIONS-661,yes,yes,,getMap(),"1. When using Windows and JVM 8, running tests on Eclipse, or Maven fail   2. its occure  due to a concurrency issue, where debugging adds some extra time hiding the real issue.  3.concurrency issue in HashSetValuedHashMapTest
+The `getMap()` method, when testing a `HashSetValuedHashMap`, would return an object of this type. Which is an instance of `SetValuedMap",yes," b5eb4fcc8d325810297f10c595961d4eee528ae0", eed8a7adb3de7441751e846f4a75d110dd205f23,none,java Version 8,,yes,n0,TD,yes,,,mvn test -Dtest=org.apache.commons.collections4.multimap.HashSetValuedHashMapTest -Drat.skip=true,0,   boolean isSetValuedMap = AbstractMultiValuedMapTest.this.getMap() instanceof SetValuedMap;  insert this line in  public Collection<V>[] getSampleValues()  method and     public Collection<V>[] getNewSampleValues() {,n,,,,,,,no:100times,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,COLLECTIONS-812,yes,yes,,testSave,"Fragile test EmptyPropertiesTest.testSave, found in https://github.com/apache/commons-collections/pull/304
+
+It passed after kicked GH Actions.",yes,bc326f8ef5b0d424f4e527e1a05d7cd36d147ef6,1677daceab74895fdf5056c9a48aa94f9e709fb9,none,java version 8,,yes,no,TD,yes,,reproducible,mvn test -Dtest=org.apache.commons.collections4.properties.EmptyPropertiesTest#testSave  -Drat.skip=true,"265,272,285","add ... try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                fail(""Test interrupted during sleep: "" + e.getMessage(), e);
+            }    ...after [PropertiesFactory.EMPTY_PROPERTIES.store(actual, comments);    PropertiesFactory.INSTANCE.createProperties().store(expected, comments);expected.reset();]",n,,,,,,,no:100times,yes:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,COLLECTIONS-836,yes,yes,,,there is no info but show the test class where the probem occure,yes,14d7d98e7e3c993ac2e0f8b32ccc3789eb7ecc14,14d7d98e7e3c993ac2e0f8b32ccc3789eb7ecc14,none,java version 8,,yes,no,,yes,,reproducible,mvn test -Dtest=org.apache.commons.collections4.bidimap.DualHashBidiMapTest#testBidiKeySetValuesOrder -Drat.skip=true,268," just skip this code    if((getIterationBehaviour() & AbstractCollectionTest.UNORDERED) == 0){          ..... @Test     public void testBidiKeySetValuesOrder() {         resetFull();         final Iterator<K> keys = map.keySet().iterator();         final Iterator<V> values = map.values().iterator();         while (keys.hasNext() && values.hasNext()) {             final K key = keys.next();             final V value = values.next();             assertSame(map.get(key), value);         }         assertFalse(keys.hasNext());         assertFalse(values.hasNext());     }",n,,,, ,0,,no:100times,no:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,COLLECTIONS-850,yes,yes,,testMultiValuedMapIterator(),no there is not enough info,yes,"I did not find any commit from the PR. Then i extracted the commit near the date of the creation of the issue i.e “git log --since=""2023-11-15"" --until=""2023-11-23"" --pretty=format:""%H %ad %s"".   1. a3c8e94365a528e5630b203c4d30790f342d2c4a",a3c8e94365a528e5630b203c4d30790f342d2c4a,none,java version 8,,yes,no,TD,yes,,reproducible,1.mvn test -Dtest=org.apache.commons.collections4.multimap.TransformedMultiValuedMapTest#testMultiValuedMapIterator -Drat.skip=true   2.mvn -Dtest=org.apache.commons.collections4.multimap.ArrayListValuedHashMapTest#testMultiValuedMapIterator -Drat.skip=true,nan,"     @Test
+    public void testMultiValuedMapIterator() {
+        final MultiValuedMap<K, V> map = makeFullMap();
+        final MapIterator<K, V> it = map.mapIterator();
+
+        assertThrows(IllegalStateException.class, () -> it.getKey());
+        assertThrows(IllegalStateException.class, () -> it.getValue());
+        if (isAddSupported()) {
+            assertThrows(IllegalStateException.class, () -> it.setValue((V) ""V""));
+        }
+
+        if (!isHashSetValue() && isAddSupported()) {
+            assertTrue(it.hasNext() );
+            assertEquals(""one"", it.next());
+            assertEquals(""one"", it.getKey());
+            assertEquals(""uno"", it.getValue());
+            assertEquals(""one"", it.next());
+assertEquals(""three"", it.getKey());
+            assertEquals(""tres"", it.getValue());
+            assertEquals(""three"", it.next());
+            assertEquals(""three"", it.getKey());
+            assertEquals(""trois"", it.getValue());
+            assertThrows(UnsupportedOperationException.class, () -> it.setValue((V) ""threetrois""));
+        }
+    }",n,,,,"     @Test
+    public void testMultiValuedMapIterator() {
+        final MultiValuedMap<K, V> map = makeFullMap();
+        final MapIterator<K, V> it = map.mapIterator();
+
+        assertThrows(IllegalStateException.class, () -> it.getKey());
+        assertThrows(IllegalStateException.class, () -> it.getValue());
+        if (isAddSupported()) {
+            assertThrows(IllegalStateException.class, () -> it.setValue((V) ""V""));
+        }
+
+        if (!isHashSetValue() && isAddSupported()) {
+            assertTrue(it.hasNext() );
+            assertEquals(""one"", it.next());
+            assertEquals(""one"", it.getKey());
+            assertEquals(""uno"", it.getValue());
+            assertEquals(""one"", it.next());
+assertEquals(""three"", it.getKey());
+            assertEquals(""tres"", it.getValue());
+            assertEquals(""three"", it.next());
+            assertEquals(""three"", it.getKey());
+            assertEquals(""trois"", it.getValue());
+            assertThrows(UnsupportedOperationException.class, () -> it.setValue((V) ""threetrois""));
+        }
+    }
+",0,,no:100times,no:100times,yes:100times,yes:100times,yes:100times,yes:100times
+,COLLECTIONS-833,yes,yes,,,,,,,,,,,,,,,,mvn test -Dtest=org.apache.commons.collections4.properties.EmptyPropertiesTest#testStoreToOutputStream -Drat.skip=true,0,,,,,,,,,no:100times,no:100times,no:100times,no:100times,no:100times,yes:100times
+,COLLECTIONS-771,yes,yes,,,,,,,,,,,,,,,,mvn test -Dtest=org.apache.commons.collections4.multimap.AbstractMultiValuedMapTest#testToString -Drat.skip=true,0,,,,,,,,,,,,,,
+,CAMEL-12025,yes,yes,,"testToFunction",The copy of the test we have in WildFly Camel fails intermittently - see https://github.com/wildfly-extras/wildfly-camel/issues/2320,yes,56b8c1a9f19effbe80dc0c6153b9e33280cee126   2.57ce965da2c60c7d469e60b1542203cc49e57136,56b8c1a9f19effbe80dc0c6153b9e33280cee126    2.57ce965da2c60c7d469e60b1542203cc49e57136,components/camel-reactor,java version - 17,,yes,no,TD,yes,,reproducible,mvn -pl components/camel-reactor test -Dtest=org.apache.camel.component.reactor.engine.ReactorStreamsServiceTest#testToFunction,332,"add    .doOnNext(res -> {
+                    latch.countDown();
+                    try {
+                        Thread.sleep(ThreadLocalRandom.current().nextInt(300));  // Introduce random sleep to simulate flakiness
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    })
+          assertTrue(latch.await(500, TimeUnit.SECONDS));",n,,,,"add ..   .doOnNext(res -> {
+                    latch.countDown();
+                    try {
+                        Thread.sleep(ThreadLocalRandom.current().nextInt(300));  // Introduce random sleep to simulate flakiness
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                })          assertTrue(latch.await(500, TimeUnit.SECONDS));",0,,yes:in 100 times,yes:in 100 times,yes:in 100 times,yes:in 100 times,yes: in 100 times,yes:in 100times
+,CAMEL-18661,yes,yes,,testMulticastAsync(),,yes,6e6fac2aa8970e12e6afdddea9469e83e1598443,6e6fac2aa8970e12e6afdddea9469e83e1598443,components/camel-opentelemetry,java version - 17,,yes,no,TD,yes,,reproducible,mvn -pl components/camel-opentelemetry test -Dtest=org.apache.camel.opentelemetry.CurrentSpanTest#testMulticastAsync,                                  216-246,"add   :CompletableFuture<Void> future1 = CompletableFuture.runAsync(() -> template.sendBody(""direct:start"", ""Hello World""));
+CompletableFuture<Void> future2 = CompletableFuture.runAsync(() -> template.sendBody(""direct:start"", ""Hello World Again""));
+
+CompletableFuture.allOf(future1, future2).join();",n,,,,,,,no,no,no,no,yes: in 100 times,yes:in 100times
+,CAMEL-20044,yes,yes,,,,,002c9ca5824e06bd7d11d1ed0d70cd52ddfc0091,253277680e28ae9aac4a5da978b54a464ca3e8,,java version - 17,,yes,no,TD,yes,,,,,,,,,,,,,,,,,,
+,CAMEL-528,,,,,,,,,,,,,,,,,,,,,,,,,,,no,no,no,yes,yes,yes,yes
+,CAMEL-9133,yes,yes,,testChangedReadLockMinAge,"The FileChangedReadLockMinAgeTest fails intermettently, maybe once every 5 times",yes,d9713c8b4a25429900ee6465cb9d5da1694a3ac4,aeb57bf,core/camel-core,java version - 17,,yes,no,TD,,,reproducible,mvn -pl core/camel-core test -Dtest=org.apache.camel.component.file.strategy.FileChangedReadLockMinAgeTest#testChangedReadLockMinAge,"45,46,47,48"," Thread.sleep(100); // Delay before writing the slow file
+        writeSlowFile();
+        Thread.sleep(100);
+        assertMockEndpointsSatisfied();",,,,,,,,no,no,yes,yes,yes,yes
+,CAMEL-9136,yes,yes,,"testTempQueueRefreshed","1.The JmsRequestReplyTempQueueMultipleConsumersTest.testTempQueueRefreshed test fails intermittently with errors like the one below. (Although sometimes the number of messages received is close to 100, and sometimes it's close to 0).    2.there is no info how to solve it.",,there does not find any commit,there does not find any commit,components/camel-jms,java version - 17,,yes,np,TD,yes,,reproducible,mvn -pl components/camel-jms test -Dtest=org.apache.camel.component.jms.JmsRequestReplyTempQueueMultipleConsumersTest#testTempQueueRefreshed,79,"add....  executorService.submit(() -> {
+                try {
+                    Thread.sleep(1000); // Add a sleep delay of 100ms
+                    template.sendBody(""direct:start"", ""Message "" + index);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } in doSendMessages()",,,,,"add....  executorService.submit(() -> {
+                try {
+                    Thread.sleep(1000); // Add a sleep delay of 100ms
+                    template.sendBody(""direct:start"", ""Message "" + index);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } in doSendMessages()",0,,no,no,no,yes,yes,yes
+,CAMEL-9135,,,,testMultipleConsumers,,,,,,,,,,,,,, mvn test -pl components/camel-disruptor -Dtest=org.apache.camel.component.disruptor.BasicDisruptorComponentTest,0,,,,,,,,,,,,,,
+,CAMEL-19484,yes,yes,,testsend,"1.The test WireTapAbortPolicyTest is flaky and it seems to fail when running on fast nodes.   2.The test can be flaky if any of the 2 first messages are processed faster (1s delay) than the 3rd is being processed by wiretap, which would then have room in the pool, and not cause it to abort.   3.see solution https://github.com/apache/camel/commit/9dd5d8061a15165b1bcd88c00953a61fd891f2b8",yes,3027559beb2880ec99a844e9ba6146c52fb47329,9dd5d8061a15165b1bcd88c00953a61fd891f2b8,core/camel-core,build success(version-17)mvn clean install core/camel-core -DskipTests -pl test -am,n,yes,no,TD,,,reproducile,mvn test -pl core/camel-core -Dtest=org.apache.camel.processor.WireTapAbortPolicyTes,0," just change ...ExecutorService pool = new ThreadPoolBuilder(context)
+                        // only allow 1 thread and 1 pending task
+                        .poolSize(1)
+                        .maxPoolSize(1)
+                        .maxQueueSize(1)
+                        // only allow 2 threads
+                        // .poolSize(2)
+                        // .maxPoolSize(2)
+                        // .maxQueueSize(0)
+                        // and about tasks
+                        .rejectedPolicy(ThreadPoolRejectedPolicy.Abort)
+                        .build();
+
+                from(""direct:start"").to(""log:foo"")
+                        // pass in the custom pool to the wireTap DSL
+                        .wireTap(""direct:tap"").executorService(pool).to(""mock:result"");
+                // END SNIPPET: e1
+                from(""direct:tap"").delay(1000).to(""mock:tap"");
+                // from(""direct:tap"")
+                //         .process(e -> {
+                //             //Thread.sleep(1000);
+                //             //barrier.await(5, TimeUnit.SECONDS);
+                //         })
+                //         // .process(e -> latch.await(5, TimeUnit.SECONDS))
+                //         .to(""mock:tap"");
+            }",,,,," just change  ..ExecutorService pool = new ThreadPoolBuilder(context)
+                        // only allow 1 thread and 1 pending task
+                        .poolSize(1)
+                        .maxPoolSize(1)
+                        .maxQueueSize(1)
+                        // only allow 2 threads
+                        // .poolSize(2)
+                        // .maxPoolSize(2)
+                        // .maxQueueSize(0)
+                        // and about tasks
+                        .rejectedPolicy(ThreadPoolRejectedPolicy.Abort)
+                        .build();
+
+                from(""direct:start"").to(""log:foo"")
+                        // pass in the custom pool to the wireTap DSL
+                        .wireTap(""direct:tap"").executorService(pool).to(""mock:result"");
+                // END SNIPPET: e1
+                from(""direct:tap"").delay(1000).to(""mock:tap"");
+                // from(""direct:tap"")
+                //         .process(e -> {
+                //             //Thread.sleep(1000);
+                //             //barrier.await(5, TimeUnit.SECONDS);
+                //         })
+                //         // .process(e -> latch.await(5, TimeUnit.SECONDS))
+                //         .to(""mock:tap"");
+            }",0,,NO:100 times,no:in 100 time,yes:1st time in 100 times,yes:1st time in 100 times,yes:1st time in 100 times,yes
+,CAMEL-20098,yes,yes,,testPropertyPlaceholders,camel-core - Flaky test using AbstractJsseParametersTest,yes,8e2dd4cdfc76f1bfcad1906937d298ccb2ec1ba9,a423ff201d98df4acc9209f716b32f9941c778f3, core/camel-core,build success(version-17),,yes,no,TD,,,reproducible,"             mvn test -pl core/camel-core -Dtest=org.apache.camel.support.jsse.KeyManagersParametersTest#testPropertyPlaceholders
+",0,,,,,,,,0,0,no,yes,yes,yes,yes
+,CAMEL-19028,yes,yes,,testsend,camel-core - WireTapAbortPolicyTest - is a bit too flaky,yes,425fdbdf593887849dc15baf540f2e81170e5aca,,core/camel-core,build success(version-17),,yes,no,TD,,,reproducible,mvn test -pl core/camel-core -Dtest=org.apache.camel.processor.WireTapAbortPolicyTest,0,,,,,,,,,no,no,yes,yes,yes,yes
+,CAMEL-17188,yes,yes,,testRunNoMoreSupplier(),,yes,,478e49f25d4343c36f63dae2291db6c651a8f062,core/camel-support,build success(version-17),,yes,no,TD,,,reproducible, mvn test -pl core/camel-support -Dtest=org.apache.camel.support.task.BackgroundTaskTest#testRunNoMoreSupplier,0,,,,,,,,no,no,yes,yes,no,yes,yes
+,CAMEL-20028,yes,yes,,testAttachmentWithNoDisposition,,yes,ca12ed909c1ea10384f1ad8587f807f3a79f3e78,a8005f063b8cc872f5a523ca50aa4f197e495996,components/camel-mail,build success(version-17),,yes,no,TD,,,reproducible,"mvn test -pl components/camel-mail -Dtest=org.apache.camel.component.mail.MailAttachmentNamesTest#testAttachmentWithNoDisposition
+",0,,,,,,,,yes,yes,yes,yes,yes,yes,yes
+,CAMEL-17180,yes,yes,,testMulticastParallel(),,yes,d606aefce49ebb040da4cbfe66ae2aae411be8e4,d8728bbc054ec17f513d5d997e8f256626c9ef69,core/camel-core,build success(version-17),,yes,no,TD,,,reproducible,mvn test -pl core/camel-core -Dtest=org.apache.camel.processor.MulticastParallelTest#testMulticastParallel,0,,,,,,,,no,no,no,no,yes,yes,yes
+,CAMEL-19741,yes,yes,,testMessageTimestamp,,yes,53c41c87f4654ccab043df8743e3c97c37f7364c,ff279e0b46d866d51c7944beb1872ca23913fd76,components/camel-sjms,build success(version-17),,yes,no,TD,,,reproducible,mvn test -pl components/camel-sjms -Dtest=org.apache.camel.component.sjms.JmsMessageTimestampTest#testMessageTimestamp,0,,,,,,,,no,no,no,no,yes,yes,yes
+,ZOOKEEPER-4327,yes,yes,,"testLargeRequestThrottling(),estRequestThrottler()","This test failed following assertions in ci:
+1. `RequestThrottlerTest.testRequestThrottler:206 expected: <5> but was: <4>`
+   This is caused by no happens-before relationship between
+   `connectionLossCount` and `disconnected.await`. Places
+   `disconnected.countDown()` after `connectionLossCount++` to solve
+   this.
+2. `RequestThrottlerTest.testLargeRequestThrottling:297 expected: <2> but was: <0>`
+
+   Large request throttling is handled in io thread, while
+   `prep_processor_request_queued` metric is updated in processor
+   thread. Places metric assertion after `finished.await` to solve this.
+Additionally, I find one more potential flaky case. After connection
+closed due to throttling third request, reconnecting could fail this
+test in slow sending environment. It is easy to reproduce by adding
+`Thread.sleep(i * 100)` in sending loop.",yes,bd0bb57092e572b4b7caaf0e62191b1818091d3,bd0bb57092e572b4b7caaf0e62191b1818091d3   2.9a7e0fd9cfa6c3c3d0b92e280fe6dcb67ee300ce,zookeeper-server,java version - 8,,yes,no,TD,,,reproducible,1.mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.RequestThrottlerTest#testRequestThrottler   2.mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.RequestThrottlerTest#testLargeRequestThrottling  ,"334,before 214,205","add Thread.sleep(i * 100) in 334 no line and before 214 line  2.apply -disconnected.countDown();
+                connectionLossCount++;(205 lne)",,,,,,,,no:first time in 100 time,no:1st time in 100 time,"yes:1st time in 100 time([ERROR] Failures:
+[ERROR]   RequestThrottlerTest.testLargeRequestThrottling:342 expected: <true> but was: <false>
+[INFO]
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",yes:1st time in 100 times,yes:1st time in 100 times,yes: in 100times
+,ZOOKEEPER-2355,yes,yes,,testEphemeralNodeDeletion(),"1.ZooKeeper ephemeral node is never deleted if follower fail while reading the proposal packet     2.follow   https://issues.apache.org/jira/secure/attachment/12785227/ZOOKEEPER-2355-02.patch     3.there's a typo in the filename for EphemralNodeNotDeletedTest.java
+there are few extra (unneeded) tabs in QuorumPeerTestBase.java (you can see them with git diff)",yes,compiled with the latest commit and create a method named with extension Custom and ran the code with commit(39973dc5fddf778733e4f0370980629c07a16d67),39973dc5fddf778733e4f0370980629c07a16d67,zookeeper-server,java version - 8,,yes,no,TD,,,reproducible,"mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.EphemeralNodeDeletionTest#testEphemeralNodeDeletion   2.mvn test -DfailIfNoTests=false   3. mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.EphemeralNodeDeletionTest#testEphemeralNodeDeletionCustom
+
+",70,add   (MainThread mt[] = new MainThread[SERVER_COUNT];,n,,,,,,,no:first time in 100 time,yes:1st time in 100 time,yes: in 100times,yes: in 100times,yes: in 100times,yes: in 100times
+,ZOOKEEPER-4308,yes,yes,,testSetDataFail,,,0c1a4bfcab051a4485f836b1da6de1b92bb30972,0c1a4bfcab051a4485f836b1da6de1b92bb30972,zookeeper-server,java version - 8,,yes,no,TD,,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.EagerACLFilterTest#testSetDataFail,0,add thread.sleep,,,,,,,,yes:first time in 100 time,yes: in 100 time,yes:first time in 100 time,yes: in 100 time,yes: in 100 time,yes:first time in 100 time
+,ZOOKEEPER-2683,yes,yes,,testRaceConditionBetweenLeaderAndAckRequestProcessorCustom,"GitHub user arshadmohammad opened a pull request:
+https://github.com/apache/zookeeper/pull/175
+ZOOKEEPER-2683: RaceConditionTest is flaky
+RaceConditionTest assertion is wrong, It fails when old leader becomes leader again.",yes,c5df1c9acec07036da225b1251cb30be60301224,201cac20e1a66e7d4180a6c7e18834c0ca6094dc,"zookeeper-server
+",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.RaceConditionTest#testRaceConditionBetweenLeaderAndAckRequestProcessor,"                                        74,75","add assertTrue(
+                ""Leader failed to transition to new state. Current state is ""
+                        + leader.getServerState(),
+            ClientBase.waitForServerState(leader, 15000,
+                QuorumStats.Provider.LOOKING_STATE, QuorumStats.Provider.FOLLOWING_STATE,
+                QuorumStats.Provider.LEADING_STATE));",n,,,,,,,no:in 100 times,no:in 100 times,"yes: 1st in 100 times(each time show flaky)......[INFO]
+[INFO] Results:
+[INFO]
+[ERROR] Failures:
+[ERROR]   RaceConditionTest.testRaceConditionBetweenLeaderAndAckRequestProcessor:87 Intentional failure: Leader failed to transition to new state. Current state is leaderelection ==> expected: <false> but was: <true>
+[INFO]
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+",yes: 1st in 100 times(each time show flaky),yes: 1st in 100 times(each time show flaky),yes: 1st in 100 times(each time show flaky)
+,ZOOKEEPER-4511,yes,yes,,"testFileTxnSnapLogMetrics
+","This test tries to write some txns to trigger snapshot with remaning txns in txn log. But snapshot taking is asynchronous, thus all txns could be written to snapshot. So in restarting, it is possible that no txns to load after snapshot restored. This will fail assertion.",yes,984c0032d834c21945b8f947f7dd4976a996f8c2,984c0032d834c21945b8f947f7dd4976a996f8c2,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.persistence.FileTxnSnapLogMetricsTest#testFileTxnSnapLogMetrics,96," assertEquals(0L, values.get(""cnt_startup_txns_loaded""));",,,,,,,,no: in 100 times,"yes: 1st time in 100 times([INFO] Results:
+[INFO]
+[ERROR] Failures:
+[ERROR]   FileTxnSnapLogMetricsTest.testFileTxnSnapLogMetrics:96 expected: <0> but was: <1>
+[INFO]
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+",yes: 1st time in 100 times,yes: 1st time in 100 times,yes: 1st time in 100 times,yes: 1st time in 100 times
+,ZOOKEEPER-86,yes,yes,,testAsync,,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.test.AsyncTest#testAsync,0,,,,,,,,,no: in 100 times,no: in 100 times(  Thread.sleep(200); Can adjust timing to reproduce flakiness..80 no line),yes: in 100 time(timing and race condition),yes: show all flaky in 100times(callback)show all flaky in 100times,yes:show all flaky in 100times,yes:show all flaky in 100times
+,ZOOKEEPER-4251,yes,yes,,testWatchAutoResetWithPending(),,yes,f8d48ac52877fcefe32cda142b213a48f71fdfa2,f8d48ac52877fcefe32cda142b213a48f71fdfa2,"zookeeper-ser
+ver",java-version-8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.test.WatcherTest#testWatchAutoResetWithPending,                                    262-282,,,,,,,,,no:in 100 times,no:in 100 times,"yes:in 100times(timing issue ,random delay",yes:in 1n 100 times,yes: in 100 times,yes: in 100times
+,ZOOKEEPER-3981,yes,yes,,testGetValidAddressWithNotValid(),,yes,79a91b95341bf417f3237d33846db19b39831712,79a91b95341bf417f3237d33846db19b39831712,"zookeeper-ser
+ver",java-version-8,,yes,no,TD,yes,,reproducible,"mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.MultipleAddressesTest#testGetValidAddressWithNotValid",                                   113-121,,,,,,,,,no:in 100 times,no:in 100 times(timing add),yes: aprox 45 from100 times(Using reserved IP and random delay,yes: in aprox 58 among 100 times,no,no
+,ZOOKEEPER-4204,yes,yes,,testMultiThreadPerf(),,yes,a7bcc8a35cd302853a4ac9b2b8e6ca4def5096c4,a7bcc8a35cd302853a4ac9b2b8e6ca4def5096c4,"zookeeper-ser
+ver",java-version-8,,yes,no,TD,yes,,reproducible,"mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.util.RequestPathMetricsCollectorTest#testMultiThreadPerf
+",                                    in code,,,,,,,,,no: in 100 times,no in 100 times,yes in 100 times,yes,yes,yes
+,ZOOKEEPER-01,yes,yes,,testCallbackWorksOnFileDeleted(),,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.common.FileChangeWatcherTest,0,,,,,,,,yes,yes:first time in 100 time(without code changes),,,,,
+,ZOOKEEPER-02,yes,yes,,1.testStatResetWithZKNotRunning:   2.testStatResetWithLeader   3. testStatResetWithFollower,,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible," mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.StatResetCommandTest
+",0,,,,,,,,yes,yes:,,,,,
+,ZOOKEEPER-03,yes,yes,,setupEach:,,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible, mvn test -pl zookeeper-server -Dtest= org.apache.zookeeper.server.admin.CommandAuthTest,0,,,,,,,,yes,yes,,,,,
+,ZOOKEEPER-04,yes,yes,,"setupEach, testReadOnlyTxnLogDir",,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.ZooKeeperServerMainTest,0,,,,,,,,yes,yes,yes,yes,yes,yes,yes
+,ZOOKEEPER-05,yes,yes,,testDeadWatcherMetrics,,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.watch.WatcherCleanerTest,0,,,,,,,,yes,yes,yes,yes,yes,yes,yes
+,ZOOKEEPER-06,yes,yes,,testDeadWatcherMetrics,,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.test.LoadFromLogTest,0,,,,,,,,yes,yes,yes,yes,yes,yes,yes
+,ZOOKEEPER-07,yes,yes,,testDeadWatcherMetrics,,yes,does not find commit,does not find commit,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.test.ThrottledOpQuorumTest,,,,,,,,,yes(4th),yes,yes,yes,yes,yes,yes
+,ZOOKEEPER-4270,yes,yes,,testLeaderOutOfView(),,yes,da2f001db612568cde170ecaad98da8cd2da68d7,250c189778cd727a54a76e2dc7a01fc4d0220f3a.....992abc8ce224183ef3d9e01909644f4cb489a9fc,"zookeeper-ser
+ver",java version - 8,,yes,no,TD,yes,,reproducible,"mvn test -pl zookeeper-server -Dtest=org.apache.zookeeper.server.quorum.QuorumPeerMainTest#testLeaderOutOfView
+",0,,,,,,,,yes,yes:first time in 100 time(without code changes),,,,,
+,CXF-6583,yes,yes,,testWithJTA(),1.this is timing issues,,7fb966c9150652273c69852af79d90c3ed7b030e,750ed5705b68148b43cf84fa67bfad2ca117a1c4.........3fbfb800d03b251ea4e56041455cef982c6ad20d,rt/transports/jms,java version - 17,,yes,no,TD,,,reprducible,mvn test -pl rt/transports/jms -Dtest=org.apache.cxf.transport.jms.util.MessageListenerTest,"190,193,197","i were able to reoroduce it.mvn test -pl rt/transports/jms -Dtest=org.apache.cxf.transport.jms.util.MessageListenerTest
+run this class and chnaging time(2000)                                         chaniging code-    private void testTransactionalBehaviour(Connection connection, Queue dest) throws JMSException,
+            InterruptedException {
+        Queue dlq = JMSUtil.createQueue(connection, ""ActiveMQ.DLQ"");
+        assertNumMessagesInQueue(""At the start the queue should be empty"", connection, dest, 0, 0L);
+        assertNumMessagesInQueue(""At the start the DLQ should be empty"", connection, dlq, 0, 0L);
+
+        sendMessage(connection, dest, TestMessage.OK);
+        assertNumMessagesInQueue(""This message should be committed"", connection, dest, 0, 2000);
+        //assertNumMessagesInQueue(""This message should be committed"", connection, dest, 0, 3500L
+        sendMessage(connection, dest, TestMessage.FAILFIRST);
+        assertNumMessagesInQueue(""Should succeed on second try"", connection, dest, 0, 2000);
+        // assertNumMessagesInQueue(""Should succeed on second try"", connection, dest, 0, 3500L);
+
+        sendMessage(connection, dest, TestMessage.FAIL);
+        assertNumMessagesInQueue(""Should be rolled back"", connection, dlq, 1, 1000);
+       // assertNumMessagesInQueue(""Should be rolled back"", connection, dlq, 1, 3500L);
+
+    }",n,,,,,,,no,yes: in 100 time,"yes:    private void testTransactionalBehaviour(Connection connection, Queue dest) throws JMSException,
+            InterruptedException {
+        Queue dlq = JMSUtil.createQueue(connection, ""ActiveMQ.DLQ"");
+        assertNumMessagesInQueue(""At the start the queue should be empty"", connection, dest, 0, 0L);
+        assertNumMessagesInQueue(""At the start the DLQ should be empty"", connection, dlq, 0, 0L);
+
+        sendMessage(connection, dest, TestMessage.OK);
+        Thread.sleep(100);
+        assertNumMessagesInQueue(""This message should be committed"", connection, dest, 0, 2000);
+        //assertNumMessagesInQueue(""This message should be committed"", connection, dest, 0, 3500L);
+        sendMessage(connection, dest, TestMessage.FAILFIRST);
+        Thread.sleep(100); 
+        assertNumMessagesInQueue(""Should succeed on second try"", connection, dest, 0, 2000);
+        // assertNumMessagesInQueue(""Should succeed on second try"", connection, dest, 0,           3500L);
+
+        sendMessage(connection, dest, TestMessage.FAIL);
+        Thread.sleep(100); 
+        assertNumMessagesInQueue(""Should be rolled back"", connection, dlq, 1, 1000);
+        //assertNumMessagesInQueue(""Should be rolled back"", connection, dlq, 1, 3500L);
+       line: 195,199,204
+    }",yes,no,yes
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,CXF-3556,yes,yes,, acceptOneChalk,https://svn.apache.org/viewvc/cxf/trunk/rt/javascript/src/test/java/org/apache/cxf/javascript/AnyTest.java?r1=1129120&r2=1129119&pathrev=1129120&view=patch,yes,https://svn.apache.org/viewvc/cxf/trunk/rt/javascript/src/test/java/org/apache/cxf/javascript/AnyTest.java?revision=678820&view=markup&pathrev=1129120,https://svn.apache.org/viewvc/cxf/trunk/rt/javascript/src/test/java/org/apache/cxf/javascript/AnyTest.java?view=markup&pathrev=1129120,rt/javascript/javascript-tests,java version - 17,,yes,no,TD,yes,,"it may be reproducible if add  boolean notified = notifier.waitForJavascript(1000 * 10);
+        //boolean notified = notifier.waitForJavascript(1000 * 20); but show compilation error when add   Thread.sleep(1000); after implementor.prepareToWaitForOneWay(); and implementor.waitForOneWay();",mvn test -pl rt/javascript/javascript-tests -Dtest=org.apache.cxf.javascript.AnyTest,175," boolean notified = notifier.waitForJavascript(1000 * 10);
+        //boolean notified = notifier.waitForJavascript(1000 * 20);",,,,,,,,no,no,yes:100 times,yes:in 100 times,yes:1n 100 times,yes
+,CXF-7051,yes,yes,,rt/transports/jms,,,,,,,,yes,no,TD,yes,,,"mvn test -pl rt/transports/jms -Dtest=org.apache.cxf.transport.jms.RequestResponseTest
+",0,,,,,,,,,no,yes,yes:100 times,no,no,no
+,WAGON-527,yes,yes,,,"This one causes flaky tests. Moreover, the other HTTP Wagon do not set any user agent. So either all have to set or none",yes,f920bc1a4d0f407453d0c45b5cf39316d9eb19d3,ad0c89f432182a2766892b4dc4ccc20377e97851,wagon-providers/wagon-webdav-jackrabbit,Build Success (java-11),,yes,no,TD,yes,,reproducible,mvn test -pl wagon-providers/wagon-webdav-jackrabbit -Dtest=org.apache.maven.wagon.providers.webdav.HttpClientWagonTest,0,,,,,,,,,no,no,yes:100 times,yes:in 100 times,yes:1n 100 times,yes
+,SPARK-23019,yes,yes,,testSparkLauncherGetError,see https://github.com/apache/spark/pull/20221 for problem and solution,yes,"f340b6b3066033d40b7e163fd5fb68e9820adfb1
+","344e3aab87178e45957333479a07e07f202ca1fd
+",core,java 17.maven-3.9.9,,yes,no,TD,YEs,,reproducible,mvn test -pl core -Dtest=org.apache.spark.launcher.SparkLauncherSuite#testSparkLauncherGetError,0,,,,,,,,yes,yes,yea,yes:100 times,yes:in 100 times,yea,yes
+,SPARK-23020,yes,yes,,testInProcessLauncher,see https://github.com/apache/spark/pull/20291 for problem and solved,yes,16b985c1018c0f5f54ef1062bdd7960cc4a87b39,32346c8d345c8ff56200621677cf972994d6c774,core,java 17.maven-3.9.9,,yes,no,TD,yes,,reproducible,mvn test -pl core -Dtest=org.apache.spark.launcher.SparkLauncherSuite#testInProcessLauncher,0,,,,,,,,yes,yes,no,no,no,no,no
+,SPARK-14391,,,,testCommunication,,,,,,java 17.maven-3.9.9,,yes,no,TD,yes,,reproducible,mvn test -pl launcher -Dtest=org.apache.spark.launcher.LauncherServerSuite#testCommunication,0,,,,,,,,,no,no,no,yes:in 100 times,yes:1n 100 times,yes
+,SPARK-10680,yes,yes,,timeoutInactiveRequests,,,54794113a6a906b0f9c6bfb9da322e18e007214c,307e55631993e71d3c6c3c35ca54bd65acbfde0dcec5e9f78a35086bb7f9e136..........fcfd697f72163f3555eaca338af52b1ca7c7cbda,,java 17.maven-3.9.9,,yes,no,TD,yes,,reproducible,"             mvn test -pl common/network-common -Dtest=org.apache.spark.network.RequestTimeoutIntegrationSuite#timeoutInactiveRequests",106,,,,,,,,no,no,yes,yes:100 times,yes:in 100 times,yes:1n 100 times,yes
+,SPARK-10674,yes,yes,,testNoSaslClient,,,c88bb5df94f9696677c3a429472114bc66f32a52,d667d1b05a92f455f59c46eaa502ab6deb09aeb5,,java 17.maven-3.9.9,,yes,no,TD,yes,,rproducible," mvn test -pl common/network-shuffle -Dtest=org.apache.spark.network.sasl.SaslIntegrationSuite#testNoSaslClient
+",129,,,,,,,,no,no,no,no,no,no,yes
+,TEZ-1088,yes,yes,,testInputFailureCausesRerunAttemptWithinMaxAttemptSuccess,,,"e2e1aa36d5d140afeec2cf81f1cc2bfabb6d9b18","ab3c4c3468d665c9a1144452dab0ba5e580667a1",,java -11,,yws,no,TD,yes,,reproducible,mvn test -pl tez-tests -Dtest=org.apache.tez.test.TestFaultTolerance#testInputFailureCausesRerunAttemptWithinMaxAttemptSuccess,520,,,,,,,,no,no,yes,no,no,no,no
+,TEZ-2398,yes,yes,,.setup,,,406721ab17b58e29e5bf3585d556700c2ef04f05,406721ab17b58e29e5bf3585d556700c2ef04f05,,java -11,,yes,no,TD,yes,,reproducible,mvn test -pl tez-tests -Dtest=org.apache.tez.test.TestFaultTolerance,0,,,,,,,,yes,yes,no,no,no,no,no
